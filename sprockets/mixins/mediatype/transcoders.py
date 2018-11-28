@@ -50,8 +50,8 @@ class JSONTranscoder(handlers.TextContentHandler):
 
     def __init__(self, content_type='application/json',
                  default_encoding='utf-8'):
-        super().__init__(content_type, self.dumps,
-                                             self.loads, default_encoding)
+        super().__init__(content_type, self.dumps, self.loads,
+                         default_encoding)
         self.dump_options = {
             'default': self.dump_object,
             'separators': (',', ':'),
@@ -137,8 +137,7 @@ class MsgPackTranscoder(handlers.BinaryContentHandler):
             raise RuntimeError('Cannot import MsgPackTranscoder, '
                                'umsgpack is not available')
 
-        super().__init__(content_type, self.packb,
-                                                self.unpackb)
+        super().__init__(content_type, self.packb, self.unpackb)
 
     def packb(self, data):
         """Pack `data` into a :class:`bytes` instance."""

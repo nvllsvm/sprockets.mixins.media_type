@@ -36,27 +36,27 @@ class Context:
 def pack_string(obj):
     """Optimally pack a string according to msgpack format"""
     payload = str(obj).encode('ASCII')
-    l = len(payload)
-    if l < (2 ** 5):
-        prefix = struct.pack('B', 0b10100000 | l)
-    elif l < (2 ** 8):
-        prefix = struct.pack('BB', 0xD9, l)
-    elif l < (2 ** 16):
-        prefix = struct.pack('>BH', 0xDA, l)
+    pl = len(payload)
+    if pl < (2 ** 5):
+        prefix = struct.pack('B', 0b10100000 | pl)
+    elif pl < (2 ** 8):
+        prefix = struct.pack('BB', 0xD9, pl)
+    elif pl < (2 ** 16):
+        prefix = struct.pack('>BH', 0xDA, pl)
     else:
-        prefix = struct.pack('>BI', 0xDB, l)
+        prefix = struct.pack('>BI', 0xDB, pl)
     return prefix + payload
 
 
 def pack_bytes(payload):
     """Optimally pack a byte string according to msgpack format"""
-    l = len(payload)
-    if l < (2 ** 8):
-        prefix = struct.pack('BB', 0xC4, l)
-    elif l < (2 ** 16):
-        prefix = struct.pack('>BH', 0xC5, l)
+    pl = len(payload)
+    if pl < (2 ** 8):
+        prefix = struct.pack('BB', 0xC4, pl)
+    elif pl < (2 ** 16):
+        prefix = struct.pack('>BH', 0xC5, pl)
     else:
-        prefix = struct.pack('>BI', 0xC6, l)
+        prefix = struct.pack('>BI', 0xC6, pl)
     return prefix + payload
 
 
