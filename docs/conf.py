@@ -1,4 +1,4 @@
-from sprockets.mixins.mediatype import __version__
+import pkg_resources
 
 needs_sphinx = '1.0'
 extensions = ['sphinx.ext.autodoc',
@@ -8,7 +8,7 @@ extensions = ['sphinx.ext.autodoc',
 master_doc = 'index'
 project = 'sprockets.mixins.mediatype'
 copyright = '2015-2016, AWeber Communications'
-release = __version__
+release = pkg_resources.get_distribution('sprockets.mixins.mediatype').version
 version = '.'.join(release.split('.')[0:1])
 
 html_style = 'custom.css'

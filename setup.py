@@ -4,8 +4,6 @@
 import os
 import setuptools
 
-from sprockets.mixins import mediatype
-
 
 def read_requirements(file_name):
     requirements = []
@@ -30,7 +28,6 @@ tests_require = read_requirements('testing.txt')
 
 setuptools.setup(
     name='sprockets.mixins.mediatype',
-    version=mediatype.__version__,
     description='A mixin for reporting handling content-type/accept headers',
     long_description='\n' + open('README.rst').read(),
     url='https://github.com/sprockets/sprockets.mixins.media_type',
@@ -61,6 +58,7 @@ setuptools.setup(
     extras_require={
         'msgpack': ['u-msgpack-python>=2.5.0,<3']
     },
+    setup_requires=['setuptools_scm'],
     namespace_packages=['sprockets', 'sprockets.mixins'],
     test_suite='nose.collector',
     python_requires='>=3.5',
