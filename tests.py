@@ -4,7 +4,6 @@ import json
 import os
 import pickle
 import struct
-import sys
 import unittest
 import uuid
 
@@ -28,7 +27,7 @@ class UTC(datetime.tzinfo):
         return 'UTC'
 
 
-class Context(object):
+class Context:
     """Super simple class to call setattr on"""
     def __init__(self):
         self.settings = {}
@@ -140,7 +139,7 @@ class GetRequestBodyTests(testing.AsyncHTTPTestCase):
 class JSONTranscoderTests(unittest.TestCase):
 
     def setUp(self):
-        super(JSONTranscoderTests, self).setUp()
+        super().setUp()
         self.transcoder = transcoders.JSONTranscoder()
 
     def test_that_uuids_are_dumped_as_strings(self):
@@ -160,13 +159,6 @@ class JSONTranscoderTests(unittest.TestCase):
         dumped = self.transcoder.dumps(obj)
         self.assertEqual(dumped.replace(' ', ''),
                          '{"now":"%s"}' % obj['now'].isoformat())
-
-    @unittest.skipIf(sys.version_info[0] == 2, 'bytes unsupported on python 2')
-    def test_that_bytes_are_base64_encoded(self):
-        bin = bytes(os.urandom(127))
-        dumped = self.transcoder.dumps({'bin': bin})
-        self.assertEqual(
-            dumped, '{"bin":"%s"}' % base64.b64encode(bin).decode('ASCII'))
 
     def test_that_bytearrays_are_base64_encoded(self):
         bin = bytearray(os.urandom(127))
@@ -226,7 +218,7 @@ class ContentSettingsTests(unittest.TestCase):
 class ContentFunctionTests(unittest.TestCase):
 
     def setUp(self):
-        super(ContentFunctionTests, self).setUp()
+        super().setUp()
         self.context = Context()
 
     def test_that_add_binary_content_type_creates_binary_handler(self):
@@ -281,7 +273,7 @@ class ContentFunctionTests(unittest.TestCase):
 class MsgPackTranscoderTests(unittest.TestCase):
 
     def setUp(self):
-        super(MsgPackTranscoderTests, self).setUp()
+        super().setUp()
         self.transcoder = transcoders.MsgPackTranscoder()
 
     def test_that_strings_are_dumped_as_strings(self):
@@ -373,6 +365,6 @@ class MsgPackTranscoderTests(unittest.TestCase):
 
     def test_that_utf8_values_can_be_forced_to_bytes(self):
         data = b'a ascii value'
-        dumped = self.transcoder.packb(transcoders.BinaryWrapper(data))
+        dumped = self.transcoder.packb(data)
         self.assertEqual(self.transcoder.unpackb(dumped), data)
         self.assertEqual(dumped, pack_bytes(data))

@@ -7,7 +7,6 @@ Bundled media type transcoders.
 """
 import base64
 import json
-import sys
 import uuid
 
 import collections
@@ -18,28 +17,6 @@ except ImportError:
     umsgpack = None
 
 from sprockets.mixins.mediatype import handlers
-
-
-class BinaryWrapper(bytes):
-    """
-    Ensures that a Python 2 ``str`` is treated as binary.
-
-    Since :class:`bytes` is a synonym for :class:`str` in Python 2,
-    you cannot distinguish between something that should be binary
-    and something that should be encoded as a string.  This is a
-    problem in formats `such as msgpack`_ where binary data and
-    strings are encoded differently.  The :class:`MsgPackTranscoder`
-    accomodates this by trying to UTF-8 encode a :class:`str` instance
-    and falling back to binary encoding if the transcode fails.
-
-    You can avoid this by wrapping binary content in an instance of
-    this class.  The transcoder will then treat it as a binary payload
-    instead of trying to detect whether it is a string or not.
-
-    .. _such as msgpack: http://msgpack.org
-
-    """
-    pass
 
 
 class JSONTranscoder(handlers.TextContentHandler):
@@ -73,7 +50,7 @@ class JSONTranscoder(handlers.TextContentHandler):
 
     def __init__(self, content_type='application/json',
                  default_encoding='utf-8'):
-        super(JSONTranscoder, self).__init__(content_type, self.dumps,
+        super().__init__(content_type, self.dumps,
                                              self.loads, default_encoding)
         self.dump_options = {
             'default': self.dump_object,
@@ -128,13 +105,6 @@ class JSONTranscoder(handlers.TextContentHandler):
         | :class:`uuid.UUID`         | Same as ``str(value)``                |
         +----------------------------+---------------------------------------+
 
-        .. warning::
-
-           :class:`bytes` instances are treated as character strings by the
-           standard JSON module in Python 2.7 so the *default* object hook
-           is never called.  In other words, :class:`bytes` values will not
-           be serialized as Base64 strings in Python 2.7.
-
         """
         if isinstance(obj, uuid.UUID):
             return str(obj)
@@ -160,17 +130,14 @@ class MsgPackTranscoder(handlers.BinaryContentHandler):
     .. _msgpack format: http://msgpack.org/index.html
 
     """
-    if sys.version_info[0] < 3:
-        PACKABLE_TYPES = (bool, int, float, long)
-    else:
-        PACKABLE_TYPES = (bool, int, float)
+    PACKABLE_TYPES = (bool, int, float)
 
     def __init__(self, content_type='application/msgpack'):
         if umsgpack is None:
             raise RuntimeError('Cannot import MsgPackTranscoder, '
                                'umsgpack is not available')
 
-        super(MsgPackTranscoder, self).__init__(content_type, self.packb,
+        super().__init__(content_type, self.packb,
                                                 self.unpackb)
 
     def packb(self, data):
@@ -214,8 +181,6 @@ class MsgPackTranscoder(handlers.BinaryContentHandler):
         +-------------------------------+-------------------------------+
         | :class:`memoryview`           | `bin family`_                 |
         +-------------------------------+-------------------------------+
-        | :class:`.BinaryWrapper`       | `bin family`_                 |
-        +-------------------------------+-------------------------------+
         | :class:`collections.Sequence` | `array family`_               |
         +-------------------------------+-------------------------------+
         | :class:`collections.Set`      | `array family`_               |
@@ -226,17 +191,6 @@ class MsgPackTranscoder(handlers.BinaryContentHandler):
         +-------------------------------+-------------------------------+
 
         .. note::
-
-           :class:`str` and :class:`bytes` are the same before Python 3.
-           If you want a value to be treated as a binary value, then you
-           should wrap it in :class:`.BinaryWrapper` if there is any
-           chance of running under Python 2.7.
-
-           The processing of :class:`str` in Python 2.x attempts to
-           encode the string as a UTF-8 stream.  If the ``encode`` succeeds,
-           then the string is encoded according to the `str family`_.
-           If ``encode`` fails, then the string is encoded according to
-           the `bin family`_ .
 
         .. _nil byte: https://github.com/msgpack/msgpack/blob/
            0b8f5ac67cdd130f4d4d4fe6afb839b989fdb86a/spec.md#formats-nil
@@ -276,16 +230,6 @@ class MsgPackTranscoder(handlers.BinaryContentHandler):
 
         if hasattr(datum, 'isoformat'):
             datum = datum.isoformat()
-
-        if sys.version_info[0] < 3 and isinstance(datum, (str, unicode)):
-            if isinstance(datum, str) and not isinstance(datum, BinaryWrapper):
-                # try to decode this into a string to make the common
-                # case work.  If we fail, then send along the bytes.
-                try:
-                    datum = datum.decode('utf-8')
-                except UnicodeDecodeError:
-                    pass
-            return datum
 
         if isinstance(datum, (bytes, str)):
             return datum

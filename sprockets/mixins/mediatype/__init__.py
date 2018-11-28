@@ -12,7 +12,7 @@ except ImportError as error:  # pragma no cover
     def _error_closure(*args, **kwargs):
         raise error
 
-    class ErrorClosureClass(object):
+    class ErrorClosureClass:
         def __init__(self, *args, **kwargs):
             raise error
 

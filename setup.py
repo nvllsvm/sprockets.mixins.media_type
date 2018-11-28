@@ -51,7 +51,11 @@ setuptools.setup(
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    packages=setuptools.find_packages(),
+    packages=[
+        'sprockets',
+        'sprockets.mixins',
+        'sprockets.mixins.mediatype'
+    ],
     install_requires=install_requires,
     tests_require=tests_require,
     extras_require={

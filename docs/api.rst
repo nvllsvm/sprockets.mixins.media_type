@@ -33,6 +33,3 @@ Bundled Transcoders
 
 .. autoclass:: MsgPackTranscoder
    :members:
-
-.. autoclass:: BinaryWrapper
-   :members:

@@ -43,7 +43,7 @@ SETTINGS_KEY = 'sprockets.mixins.mediatype.ContentSettings'
 _warning_issued = False
 
 
-class ContentSettings(object):
+class ContentSettings:
     """
     Content selection settings.
 
@@ -276,7 +276,7 @@ def set_default_content_type(application, content_type, encoding=None):
     settings.default_encoding = encoding
 
 
-class ContentMixin(object):
+class ContentMixin:
     """
     Mix this in to add some content handling methods.
 
@@ -298,7 +298,7 @@ class ContentMixin(object):
     """
 
     def initialize(self):
-        super(ContentMixin, self).initialize()
+        super().initialize()
         self._request_body = None
         self._best_response_match = None
         self._logger = getattr(self, 'logger', logger)

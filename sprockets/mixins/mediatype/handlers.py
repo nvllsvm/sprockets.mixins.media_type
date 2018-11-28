@@ -10,7 +10,7 @@ Basic content handlers.
 from tornado import escape
 
 
-class BinaryContentHandler(object):
+class BinaryContentHandler:
     """
     Pack and unpack binary types.
 
@@ -58,7 +58,7 @@ class BinaryContentHandler(object):
         return self._unpack(data_bytes)
 
 
-class TextContentHandler(object):
+class TextContentHandler:
     """
     Transcodes between textual and object representations.
 
